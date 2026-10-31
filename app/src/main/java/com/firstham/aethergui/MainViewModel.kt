@@ -292,14 +292,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         telemetryJob = viewModelScope.launch {
             var tx = 18_400L
             var rx = 82_600L
+            val history = mutableListOf(0.2f, 0.4f, 0.35f, 0.6f, 0.75f, 0.5f, 0.8f, 0.65f)
             while (_connectionStatus.value == ConnectionStatus.CONNECTED) {
-                delay(1200)
-                tx += (1200L..16000L).random()
-                rx += (6400L..34000L).random()
+                delay(1000)
+                val txDelta = (15_000L..180_000L).random()
+                val rxDelta = (65_000L..950_000L).random()
+                tx += txDelta
+                rx += rxDelta
+                val normSpeed = (rxDelta / 1_000_000f).coerceIn(0.05f, 1.0f)
+                history.add(normSpeed)
+                if (history.size > 18) history.removeAt(0)
+
                 _telemetry.value = _telemetry.value.copy(
                     uploadBytes = tx,
                     downloadBytes = rx,
-                    pingMs = (24..54).random()
+                    uploadSpeedBps = txDelta,
+                    downloadSpeedBps = rxDelta,
+                    downloadHistory = history.toList(),
+                    pingMs = (24..48).random()
                 )
             }
         }

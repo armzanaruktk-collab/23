@@ -46,6 +46,11 @@ fun ConnectScreen(
             onToggleClick = { viewModel.toggleConnection() }
         )
 
+        NetworkTelemetryMonitor(
+            status = status,
+            telemetry = telemetry
+        )
+
         EngineSelector(
             selectedEngine = engine,
             onEngineSelect = { viewModel.setEngine(it) }

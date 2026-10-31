@@ -41,7 +41,10 @@ data class TelemetryState(
     val locationName: String? = null,
     val countryFlag: String? = null,
     val uploadBytes: Long = 0L,
-    val downloadBytes: Long = 0L
+    val downloadBytes: Long = 0L,
+    val downloadSpeedBps: Long = 0L,
+    val uploadSpeedBps: Long = 0L,
+    val downloadHistory: List<Float> = emptyList()
 )
 
 data class LogEntry(
