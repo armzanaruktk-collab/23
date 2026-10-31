@@ -58,3 +58,19 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+          
+      - name: Publish APK GitHub Release
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}-${{ github.run_attempt }}
+          name: godarmxvpn Build ${{ github.run_number }}
+          body: |
+            Automated Android APK build.
+
+            Commit: ${{ github.sha }}
+            Workflow run: ${{ github.run_number }}
+          files: app/build/outputs/apk/debug/*.apk
+          draft: false
+          prerelease: true
+          fail_on_unmatched_files: true
