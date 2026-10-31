@@ -41,16 +41,6 @@ fun FoxyVPNTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = DarkColorScheme
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = BgDark.toArgb()
-            window.navigationBarColor = BgDark.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
-            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = false
-        }
-    }
 
     MaterialTheme(
         colorScheme = colorScheme,
