@@ -44,9 +44,9 @@ jobs:
           fi
           echo "Using SDK manager: $SDKMANAGER"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
           echo "$ANDROID_SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
-          echo "$ANDROID_SDK_ROOT/build-tools/35.0.0" >> "$GITHUB_PATH"
+          echo "$ANDROID_SDK_ROOT/build-tools/36.0.0" >> "$GITHUB_PATH"
 
       - name: Extract project ZIP
         shell: bash
@@ -98,6 +98,33 @@ jobs:
           fi
           test -f vpnLib/build.gradle -o -f vpnLib/build.gradle.kts
           sed -n '1,100p' vpnLib/build.gradle 2>/dev/null || sed -n '1,100p' vpnLib/build.gradle.kts
+
+      - name: Ensure Kotlin plugin is applied to vpnLib
+        working-directory: ${{ steps.project.outputs.root }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f vpnLib/build.gradle ]; then
+            if ! grep -Eq "^plugins[[:space:]]*\\{|^apply plugin: ['\\\"]org\\.jetbrains\\.kotlin\\.android['\\\"]" vpnLib/build.gradle; then
+              python3 - <<'PY'
+from pathlib import Path
+p = Path("vpnLib/build.gradle")
+s = p.read_text()
+block = "plugins { id 'org.jetbrains.kotlin.android' version '2.0.21' }\\n\\n"
+if not s.lstrip().startswith('plugins {'):
+    p.write_text(block + s)
+PY
+            fi
+          elif [ -f vpnLib/build.gradle.kts ]; then
+            if ! grep -q "org.jetbrains.kotlin.android" vpnLib/build.gradle.kts; then
+              sed -i '1i plugins { id("org.jetbrains.kotlin.android") version "2.0.21" }\\n' vpnLib/build.gradle.kts
+            fi
+          else
+            echo "vpnLib Gradle build file is missing." >&2
+            exit 1
+          fi
+          echo "vpnLib Kotlin plugin configuration:"
+          sed -n '1,45p' vpnLib/build.gradle 2>/dev/null || sed -n '1,45p' vpnLib/build.gradle.kts
 
       - name: Build debug APK
         working-directory: ${{ steps.project.outputs.root }}
