@@ -1,0 +1,48 @@
+plugins {
+    id "com.android.application" version "8.9.2" apply false
+    id "com.android.library" version "8.9.2" apply false
+    // vpnLib is partly Kotlin, so the Kotlin plugin has to be on the classpath even though
+    // Panther's own sources are all Java.
+    id 'org.jetbrains.kotlin.android' version '2.0.21' apply false
+}
+
+// vpnLib reads its SDK levels as `project.ext.compileSdkVersion` from within its OWN project.
+// Gradle's extra-properties extension is not inherited from the root project, so these have to be
+// set on every project - declaring them on the root alone makes vpnLib fail to configure.
+allprojects {
+    ext {
+        compileSdkVersion = 36
+        minSdkVersion = 26
+        targetSdkVersion = 35
+    }
+}
+
+// vpnLib is vendored third-party code. Its lint findings are upstream's to fix, and a call it
+// guards at runtime should not be able to block a Panther release - the API-33 addRoute call in
+// OpenVPNService is exactly that. Lint still runs, and still aborts, on :app.
+subprojects {
+    plugins.withId('com.android.library') {
+        android {
+            lint {
+                abortOnError = false
+                checkReleaseBuilds = false
+            }
+        }
+    }
+}
+
+
+// vpnLib uses the Kotlin DSL extension in its own build.gradle. Declaring the
+// Kotlin plugin with apply false only makes it available; it does not create
+// the kotlin {} extension in the library subproject.
+project(':vpnLib') {
+    apply plugin: 'org.jetbrains.kotlin.android'
+}
+
+// vpnLib uses Kotlin's Base64 API, which is experimental in this Kotlin version.
+// Opt in for this third-party module so its Kotlin sources compile without modifying the submodule.
+project(':vpnLib') {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions.freeCompilerArgs += ['-opt-in=kotlin.io.encoding.ExperimentalEncodingApi']
+    }
+}

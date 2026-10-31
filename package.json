@@ -1,0 +1,10 @@
+{
+  "name": "@amirmahdavi2023/panther",
+  "private": true,
+  "version": "2.13.8",
+  "type": "module",
+  "scripts": {
+    "fetch:android": "bash scripts/fetch-android-assets.sh",
+    "build:android": "cd android && ./gradlew assembleRelease"
+  }
+}

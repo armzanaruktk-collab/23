@@ -1,0 +1,84 @@
+<resources>
+    <string name="app_name">FoxyVPN</string>
+    <string name="version_format" translatable="false">v%1$s</string>
+    <string name="channel_url" translatable="false">https://t.me/parsv2r</string>
+    <string name="default_socks_address" translatable="false">127.0.0.1:1819</string>
+    <string name="default_mtu" translatable="false">1500</string>
+
+    <string name="nav_connect">Connect</string>
+    <string name="nav_configurations">Configurations</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_about">About</string>
+    <string name="configurations_title">Configurations</string>
+    <string name="settings_title">Settings</string>
+    <string name="about_title">About</string>
+
+    <string name="connect">CONNECT</string>
+    <string name="disconnect">DISCONNECT</string>
+    <string name="connecting">CONNECTING…</string>
+    <string name="disconnecting">DISCONNECTING…</string>
+    <string name="status_disconnected">Panther Ready</string>
+    <string name="status_connected">Panther Active</string>
+    <string name="status_connecting">Connecting…</string>
+    <string name="tap_to_secure">Tap to secure</string>
+    <string name="status_protected">You are protected</string>
+    <string name="status_starting">Starting Panther VPN</string>
+    <string name="connection_location_unavailable">Location unavailable</string>
+    <string name="location_detecting">Detecting location…</string>
+    <string name="location_label">YOUR LOCATION</string>
+    <string name="ping_label">Ping</string>
+    <string name="traffic_label">Traffic</string>
+    <string name="upload_label">Upload</string>
+    <string name="download_label">Download</string>
+
+    <string name="engine_label">ENGINE</string>
+    <string name="engine_turbo">Turbo</string>
+    <string name="engine_turbo_detail">Fastest. Stays local.</string>
+    <string name="engine_global">Global</string>
+    <string name="engine_global_detail">Comes out abroad.</string>
+    <string name="engine_stealth">Prowl</string>
+    <string name="engine_stealth_detail">Gets through anyway.</string>
+    <string name="engine_lantern">Beacon</string>
+    <string name="engine_lantern_detail">Stands on its own.</string>
+
+    <string name="support_channel">Support Channel</string>
+    <string name="choose_server">Choose Server</string>
+    <string name="login_firefox">Login Firefox</string>
+    <string name="server_configuration">SERVER CONFIGURATION</string>
+    <string name="connection_source">Connection source</string>
+    <string name="save_my_server">SAVE MY SERVER</string>
+    <string name="remove_saved">REMOVE SAVED</string>
+    <string name="ssh_host_hint">SSH Host / IP</string>
+    <string name="ssh_port_hint">Port</string>
+    <string name="ssh_user_hint">Username</string>
+    <string name="ssh_pass_hint">Password</string>
+    <string name="connection_mode">CONNECTION MODE</string>
+    <string name="save_connection_settings">SAVE CONNECTION SETTINGS</string>
+    <string name="connection_log">CONNECTION LOG</string>
+    <string name="clear_log">Clear Log</string>
+    <string name="copy_log">Copy Log</string>
+
+    <string name="theme">Theme</string>
+    <string name="split_tunneling">Split Tunneling</string>
+    <string name="split_tunneling_summary">Choose which apps use the VPN connection</string>
+    <string name="split_include">Include Apps</string>
+    <string name="split_exclude">Exclude Apps</string>
+    <string name="auto_reconnect">Auto Reconnect</string>
+    <string name="auto_reconnect_summary">Recover automatically after a temporary connection interruption</string>
+    <string name="dns_protection">Private DNS Routing</string>
+    <string name="dns_protection_summary">Route DNS queries strictly through the encrypted tunnel</string>
+    <string name="kill_switch">Fail closed on tunnel errors (Kill Switch)</string>
+    <string name="kill_switch_summary">Keep VPN routes blocked if connection unexpectedly drops</string>
+    <string name="fast_bridge">Fast Tunnel (Beta)</string>
+    <string name="fast_bridge_summary">Lightweight packet engine with low latency</string>
+    <string name="socks_address">Local SOCKS5 Proxy</string>
+    <string name="mtu">VPN MTU</string>
+    <string name="reset_defaults">Reset defaults</string>
+    <string name="reset_route">Reset Prowl Route</string>
+    <string name="reset_route_summary">Forget current gateway memory and redial fresh route</string>
+
+    <string name="about_tagline">Four engines, one connect button.\nNo account, nothing to paste in.</string>
+    <string name="license_line">AGPL-3.0</string>
+    <string name="telegram_handle">@parsv2r</string>
+    <string name="app_picker_title">Select Apps</string>
+</resources>

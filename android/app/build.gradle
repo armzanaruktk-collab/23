@@ -1,0 +1,89 @@
+plugins { id 'com.android.application' }
+
+dependencies {
+    implementation 'com.github.mwiede:jsch:0.2.21'
+    implementation 'androidx.core:core:1.15.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
+    implementation 'androidx.work:work-runtime:2.10.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    // OpenVPN engine for the VPN Gate relays. Ships prebuilt natives for every ABI, so no NDK
+    // build is involved. GPL-3.0, compatible with Panther's AGPL-3.0.
+    implementation project(':vpnLib')
+    // Staged by `npm run fetch:android`, hash-verified there. Not committed.
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    testImplementation 'junit:junit:4.13.2'
+}
+
+def signingProperties = new Properties()
+def signingPropertiesFile = rootProject.file('.android-signing/signing.properties')
+if (signingPropertiesFile.exists()) signingPropertiesFile.withInputStream { signingProperties.load(it) }
+def keystorePath = System.getenv('ANDROID_KEYSTORE_PATH') ?: signingProperties.getProperty('storeFile')
+def keystorePassword = System.getenv('ANDROID_KEYSTORE_PASSWORD') ?: signingProperties.getProperty('storePassword')
+def keyAliasName = System.getenv('ANDROID_KEY_ALIAS') ?: signingProperties.getProperty('keyAlias')
+def keyPasswordValue = System.getenv('ANDROID_KEY_PASSWORD') ?: signingProperties.getProperty('keyPassword')
+def releaseSigningAvailable = keystorePath && keystorePassword && keyAliasName && keyPasswordValue
+def releaseRequested = gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+
+android {
+    lint {
+        disable 'MissingTranslation'
+    }
+    namespace 'com.firstham.aethergui'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'io.github.amirmahdavi2023.panther'
+        minSdk 26
+        targetSdk 35
+
+        // vpnLib ships native libraries for x86 as well, which Panther does not split for. That
+        // extra ABI is what makes the bundle task fail with "Sequence contains more than one
+        // matching element" - the split set and the packaged set disagree. Pin the packaged ABIs
+        // to the three we actually ship so both agree.
+        ndk { abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64' }
+        versionCode 41
+        versionName '2.13.8'
+
+        // The version chip in the drawer and on the About page used to read a hand-written
+        // string, which stopped being true after 2.0.0 and stayed wrong for sixteen releases.
+        // Generating it from versionName means the two cannot disagree again: there is only
+        // one number now, and it is the one the build was made with.
+        resValue 'string', 'app_version', "v" + versionName
+    }
+
+    signingConfigs {
+        release {
+            if (releaseSigningAvailable) {
+                storeFile rootProject.file(keystorePath)
+                storePassword keystorePassword
+                keyAlias keyAliasName
+                keyPassword keyPasswordValue
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (releaseRequested && !releaseSigningAvailable) throw new GradleException('Release signing credentials are required. Unsigned release APKs are not allowed.')
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // These two dependencies contain the same multi-release JAR metadata entry.
+    // It is build metadata, not runtime code, so exclude the duplicate during APK packaging.
+    packaging {
+        resources {
+            excludes += ['META-INF/versions/9/OSGI-INF/MANIFEST.MF']
+        }
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+    buildFeatures { viewBinding true; buildConfig true }
+    sourceSets { main { assets.srcDirs += ['../../third-party'] } }
+    splits { abi { enable true; reset(); include 'armeabi-v7a', 'arm64-v8a', 'x86_64'; universalApk true } }
+}

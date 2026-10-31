@@ -1,0 +1,6 @@
+{
+  "name": "FoxyVPN",
+  "description": "FoxyVPN multi-protocol SSH tunnel, Panther VPN integration, GeoIP location detection, and live network telemetry.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

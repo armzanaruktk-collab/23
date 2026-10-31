@@ -1,0 +1,61 @@
+<resources>
+    <!-- Glossy black and white.
+         The background is a true near-black so OLED panels actually switch pixels off, with
+         surfaces stepping up in small increments to read as polished glass rather than flat grey.
+         One accent colour only: an electric blue used for the connected state and nothing else,
+         so it always means the same thing. -->
+
+    <!-- A hair of navy in the near-blacks: still dark enough that OLED pixels stay all but off. -->
+    <color name="background">#020308</color>
+    <color name="surface">#0A0C12</color>
+    <color name="card">#11141C</color>
+    <color name="card_border">#212634</color>
+    <color name="border">#26262F</color>
+
+    <color name="text">#FFFFFF</color>
+    <color name="muted">#9A9AA6</color>
+    <color name="nav_inactive">#6E6E7A</color>
+
+    <!-- Accent: reserved for the connected state and active controls. -->
+    <color name="blue_600">#4DA3FF</color>
+    <color name="blue_700">#2E8BFF</color>
+    <color name="blue_800">#1E6FE0</color>
+    <color name="blue_900">#DCE9FF</color>
+    <color name="blue_950">#EEF4FF</color>
+    <color name="blue_200">#3A3A46</color>
+    <color name="blue_100">#1A1A20</color>
+    <color name="blue_50">#101014</color>
+    <color name="accent_violet">#4DA3FF</color>
+    <color name="accent_cyan">#6FD3FF</color>
+    <!-- The one deliberate exception to the single-accent rule: the Stealth engine is a
+         different kind of connection from the other two, so it is a different colour. Used
+         only on its own card and nowhere else. -->
+    <color name="stealth_violet">#A97BFF</color>
+    <color name="stealth_violet_soft">#1B1030</color>
+    <!-- And the second exception, for the same reason: the Beacon engine is a different kind of
+         connection again. Warm, because it is the one that works when the others do not. -->
+    <color name="lantern_amber">#FFB74A</color>
+    <color name="lantern_amber_soft">#2A1A08</color>
+
+    <color name="green">#3DDC84</color>
+    <color name="green_soft">#0B1F14</color>
+    <color name="red">#FF5A6E</color>
+    <color name="amber">#F5C24B</color>
+
+    <!-- The connect button: a soft white-to-silver sweep, so it reads as polished metal on black
+         and stays legible whichever state it is in. -->
+    <color name="hero_start">#3A3A44</color>
+    <color name="hero_center">#F2F2F5</color>
+    <color name="hero_end">#8E8E9A</color>
+    <color name="on_hero">#08080A</color>
+
+    <!-- Support chip in the toolbar: pale-blue hairline over a faint blue-black fill. -->
+    <color name="support_chip_fill">#0D1420</color>
+    <color name="support_chip_stroke">#664DA3FF</color>
+    <!-- Bottom navigation active pill: blue_600 at low alpha, replacing Material's default violet. -->
+    <color name="nav_indicator">#334DA3FF</color>
+
+    <color name="log_surface">#050506</color>
+    <color name="log_text">#D8D8E0</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
