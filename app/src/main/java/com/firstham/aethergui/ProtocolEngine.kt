@@ -21,13 +21,17 @@ import javax.net.ssl.SSLSocketFactory
 
 object ProtocolEngine {
 
+    private const val DEFAULT_UA = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+
     fun normalizePayload(template: String, targetHost: String, targetPort: Int): String {
         return template
             .replace("[host_port]", "$targetHost:$targetPort", ignoreCase = true)
             .replace("[host]", targetHost, ignoreCase = true)
             .replace("[port]", targetPort.toString(), ignoreCase = true)
             .replace("[protocol]", "HTTP/1.1", ignoreCase = true)
+            .replace("[ua]", DEFAULT_UA, ignoreCase = true)
             .replace("[crlf]", "\r\n", ignoreCase = true)
+            .replace("[cr]", "\r", ignoreCase = true)
             .replace("[lf]", "\n", ignoreCase = true)
     }
 

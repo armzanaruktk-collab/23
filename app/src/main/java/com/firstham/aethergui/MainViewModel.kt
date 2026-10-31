@@ -215,44 +215,38 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         activeJob?.cancel()
         activeJob = viewModelScope.launch {
             try {
-                when (mode) {
-                    ConnectionMode.DIRECT_SSH -> {
-                        val ok = ProtocolEngine.testDirectSsh(host, port, user, pass) { appendLog(it) }
-                        if (ok) markConnected() else markFailed("SSH connection handshake failed")
+                if (mode == ConnectionMode.PANTHER_VPN || mode == ConnectionMode.OPENVPN_PROFILE) {
+                    startDeviceVpn()
+                    return@launch
+                }
+
+                val transportConfig = SshTunnelTransport.TransportConfig(
+                    host = host,
+                    port = port,
+                    user = user,
+                    pass = pass,
+                    mode = mode,
+                    payload = payloadInput.value,
+                    sni = sniInput.value.trim(),
+                    proxyHost = proxyHostInput.value.trim().ifBlank { host },
+                    proxyPort = proxyPortInput.value.trim().toIntOrNull() ?: 80,
+                    wsPath = wsPathInput.value.trim().ifBlank { "/" },
+                    localSocksPort = 10808
+                )
+
+                val connected = SshTunnelTransport.connect(transportConfig) { log ->
+                    appendLog(log)
+                }
+
+                if (connected) {
+                    // Start VPN service tunnel to route device traffic through the active SSH transport
+                    val intent = Intent(context, AetherVpnService::class.java).apply {
+                        action = AetherVpnService.ACTION_START
                     }
-                    ConnectionMode.HTTP_PAYLOAD -> {
-                        ProtocolEngine.testHttpPayload(host, port, payloadInput.value) { appendLog(it) }
-                        markConnected()
-                    }
-                    ConnectionMode.SSL_TLS_SNI -> {
-                        val ok = ProtocolEngine.testTlsSni(host, port, sniInput.value.trim(), null) { appendLog(it) }
-                        if (ok) markConnected() else markFailed("TLS handshake rejected")
-                    }
-                    ConnectionMode.PAYLOAD_SNI -> {
-                        val ok = ProtocolEngine.testTlsSni(host, port, sniInput.value.trim(), payloadInput.value) { appendLog(it) }
-                        if (ok) markConnected() else markFailed("Payload + SNI failed")
-                    }
-                    ConnectionMode.HTTP_PROXY -> {
-                        val pHost = proxyHostInput.value.trim().ifBlank { host }
-                        val pPort = proxyPortInput.value.trim().toIntOrNull() ?: 80
-                        val ok = ProtocolEngine.testHttpProxy(pHost, pPort, host, port, null) { appendLog(it) }
-                        if (ok) markConnected() else markFailed("HTTP Proxy CONNECT failed")
-                    }
-                    ConnectionMode.PAYLOAD_HTTP_PROXY -> {
-                        val pHost = proxyHostInput.value.trim().ifBlank { host }
-                        val pPort = proxyPortInput.value.trim().toIntOrNull() ?: 80
-                        val ok = ProtocolEngine.testHttpProxy(pHost, pPort, host, port, payloadInput.value) { appendLog(it) }
-                        if (ok) markConnected() else markFailed("Proxy payload rejected")
-                    }
-                    ConnectionMode.SSH_WEBSOCKET -> {
-                        val pHost = proxyHostInput.value.trim().ifBlank { host }
-                        val pPort = proxyPortInput.value.trim().toIntOrNull() ?: 80
-                        val ok = ProtocolEngine.testWebSocket(pHost, pPort, wsPathInput.value.trim(), host, port) { appendLog(it) }
-                        if (ok) markConnected() else markFailed("WebSocket upgrade failed")
-                    }
-                    ConnectionMode.PANTHER_VPN, ConnectionMode.OPENVPN_PROFILE -> {
-                        startDeviceVpn()
-                    }
+                    try { ContextCompat.startForegroundService(context, intent) } catch (_: Exception) {}
+                    markConnected()
+                } else {
+                    markFailed("Connection mode [${mode.title}] SSH transport failed.")
                 }
             } catch (e: Exception) {
                 markFailed(e.message ?: "Connection error")
@@ -318,6 +312,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun disconnect() {
         activeJob?.cancel()
         telemetryJob?.cancel()
+        SshTunnelTransport.disconnect()
         val stopIntent = Intent(context, AetherVpnService::class.java).apply {
             action = AetherVpnService.ACTION_STOP
         }
