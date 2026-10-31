@@ -32,11 +32,13 @@ subprojects {
 }
 
 
-// vpnLib uses the Kotlin DSL extension in its own build.gradle. Declaring the
-// Kotlin plugin with apply false only makes it available; it does not create
-// the kotlin {} extension in the library subproject.
-project(':vpnLib') {
-    apply plugin: 'org.jetbrains.kotlin.android'
+// Apply Kotlin to vpnLib before Gradle evaluates vpnLib/build.gradle.
+// The upstream module calls kotlin { ... } at script evaluation time, so applying
+// the plugin later from a normal project configuration block is too late.
+gradle.beforeProject { targetProject ->
+    if (targetProject.path == ':vpnLib') {
+        targetProject.pluginManager.apply('org.jetbrains.kotlin.android')
+    }
 }
 
 // vpnLib uses Kotlin's Base64 API, which is experimental in this Kotlin version.
